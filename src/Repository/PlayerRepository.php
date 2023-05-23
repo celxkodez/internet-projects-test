@@ -39,6 +39,21 @@ class PlayerRepository extends ServiceEntityRepository
         }
     }
 
+    /**
+     * @return Player[] Returns an array of Player objects
+     */
+    public function withOutTeam(): array
+    {
+        return $this->createQueryBuilder('p')
+            ->andWhere('p.team = :val')
+            ->setParameter('val', null)
+            ->orderBy('p.id', 'ASC')
+            ->setMaxResults(10)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
 //    /**
 //     * @return Player[] Returns an array of Player objects
 //     */
