@@ -6,6 +6,7 @@ use App\Entity\Player;
 use App\Entity\Team;
 use App\Repository\PlayerRepository;
 use App\Repository\TeamRepository;
+use Knp\Component\Pager\PaginatorInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,11 +25,18 @@ class PlayerController extends AbstractController
     }
 
     #[Route('/', name: 'index')]
-    public function index(PlayerRepository $repository, TeamRepository $teamRepository): Response
+    public function index(
+        PlayerRepository $repository,
+        PaginatorInterface $paginator,
+        Request $request
+    ): Response
     {
         return $this->render('player/index.html.twig', [
-            'players' => $repository->findAll(),
-            'teams' => $teamRepository->findAll()
+            'players' => $paginator->paginate(
+                $repository->createQueryBuilder('q'),
+                $request->query->getInt('page', 1),
+                20
+            ),
         ]);
     }
 

@@ -6,6 +6,7 @@ use App\Entity\Team;
 use App\Form\TeamType;
 use App\Repository\PlayerRepository;
 use App\Repository\TeamRepository;
+use Knp\Component\Pager\PaginatorInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -29,11 +30,19 @@ class TeamController extends AbstractController
     }
 
     #[Route('/', name: 'index')]
-    public function index(TeamRepository $teamRepository): Response
+    public function index(
+        TeamRepository $teamRepository,
+        PaginatorInterface $paginator,
+        Request $request
+    ): Response
     {
 
         return $this->render('team/index.html.twig', [
-            'teams' => $teamRepository->findAll(),
+            'teams' => $paginator->paginate(
+                $teamRepository->createQueryBuilder('q'),
+                $request->query->getInt('page', 1),
+                20
+            ),
             'context' => [ ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($obj){ return $obj->getId(); }]
         ]);
     }
