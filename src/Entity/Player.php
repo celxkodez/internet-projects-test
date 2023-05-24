@@ -3,7 +3,9 @@
 namespace App\Entity;
 
 use App\Repository\PlayerRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints;
 
 #[ORM\Entity(repositoryClass: PlayerRepository::class)]
 class Player
@@ -13,11 +15,16 @@ class Player
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Constraints\NotBlank]
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
+    #[Constraints\NotBlank]
     #[ORM\Column(length: 255)]
     private ?string $surname = null;
+
+    #[ORM\Column(type: Types::DECIMAL, precision: 16, scale: 2, nullable: true)]
+    private ?string $market_value = null;
 
     #[ORM\ManyToOne(inversedBy: 'players')]
     private ?Team $team = null;
@@ -105,6 +112,18 @@ class Player
     public function setIsForSale(bool $is_for_sale): self
     {
         $this->is_for_sale = $is_for_sale;
+
+        return $this;
+    }
+
+    public function getMarketValue(): ?string
+    {
+        return $this->market_value;
+    }
+
+    public function setMarketValue(?string $market_value): self
+    {
+        $this->market_value = $market_value;
 
         return $this;
     }

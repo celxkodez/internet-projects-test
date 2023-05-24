@@ -40,8 +40,9 @@
 
             <div class="col-12 my-3">
                 <select class="select2 form-control"  name="player_ids[]" multiple="multiple">
-                    <option value="AL">Alabama</option>
-                    <option value="WY">Wyoming</option>
+                    {% for player in players %}
+                        <option value="{{ player.id }}">{{ player.name }}</option>
+                    {% endfor %}
                 </select>
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>

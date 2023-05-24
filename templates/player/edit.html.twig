@@ -1,6 +1,6 @@
 {% extends 'layouts/app.html.twig' %}
 
-{% block title %}Teams{% endblock %}
+{% block title %}Player{% endblock %}
 
 {% block javascripts %}
     <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
@@ -12,7 +12,7 @@
     <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{{ path('app_home') }}">Home</a></li>
-            <li class="breadcrumb-item active" aria-current="page"><a href="{{ path('teams.index') }}">Teams</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><a href="{{ path('players.index') }}">Players</a></li>
             <li class="breadcrumb-item active" aria-current="page">Edit</li>
         </ol>
     </nav>
@@ -20,28 +20,28 @@
 
 {% block body %}
     <div class="row m-5">
-        <form method="POST" action="{{ path('teams.update', {id: team.id}) }}">
+        <form method="POST" action="{{ path('players.update', {id: player.id}) }}">
             <div class="col-12">
                 <div class="row">
                     <div class="col-md-4 col-sm-12 mb-3 form-floating">
-                        <input required type="text" name="name" value="{{ team.name }}" class="form-control" id="team" placeholder="Bayern Munich FC">
-                        <label for="team" class="form-label">Team Name</label>
+                        <input required type="text" name="name" value="{{ player.name }}" class="form-control" id="player" placeholder="Lionel">
+                        <label for="player" class="form-label">Player Name</label>
                     </div>
                     <div class="col-md-4 col-sm-12 mb-3 form-floating">
-                        <input required type="number" value="{{ team.moneyBalance }}" id="money_balance" name="money_balance" placeholder="5000.00" class="form-control">
-                        <label for="money_balance"  class="form-label">Money Balance</label>
+                        <input type="number" value="{{ player.marketValue }}" id="money_balance" name="market_value" placeholder="5000.00" class="form-control">
+                        <label for="money_balance"  class="form-label">Market Value</label>
                     </div>
                     <div class="form-floating col-md-4 col-sm-12 mb-3">
-                        <input required type="text" value="{{ team.country }}" name="country" class="form-control" id="country" placeholder="Netherlands">
-                        <label for="country" class="form-label">Country</label>
+                        <input required type="text" value="{{ player.surname }}" name="surname" class="form-control" id="country" placeholder="Messi">
+                        <label for="country" class="form-label">Surname</label>
                     </div>
                 </div>
             </div>
 
             <div class="col-12 my-3">
-                <select class="select2 form-control"  name="player_ids[]" multiple="multiple">
-                    {% for player in players %}
-                        <option value="{{ player.id }}" {{ team.players.contains(player) ? 'selected' : '' }}>{{ player.name }}</option>
+                <select class="select2 form-control"  name="team">
+                    {% for team in teams %}
+                        <option value="{{ team.id }}" {{ team.id is same as player.team.id ? 'selected' : '' }}>{{ team.name }}</option>
                     {% endfor %}
                 </select>
             </div>

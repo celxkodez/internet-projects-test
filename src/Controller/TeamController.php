@@ -16,7 +16,10 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 #[Route('/teams', name: 'teams.')]
 class TeamController extends AbstractController
 {
-    public function __construct(protected LoggerInterface $logger)
+    public function __construct(
+        protected LoggerInterface $logger,
+        protected ValidatorInterface $validator
+    )
     {
     }
 
@@ -95,9 +98,72 @@ class TeamController extends AbstractController
 
 
     #[Route('/edit/{id}', name: 'edit', methods: ["GET"])]
-    public function edit(Team $team): Response
+    public function edit(
+        Team $team,
+        PlayerRepository $playerRepository,
+        ValidatorInterface $validator,
+        Request $request
+    ): Response
     {
         return $this->render('team/edit.html.twig', [
+            'team' => $team,
+            'players' => $playerRepository->findAll()
+        ]);
+    }
+
+    #[Route('/edit/{id}', name: 'update', methods: ["POST"])]
+    public function update(
+        Team $team,
+        PlayerRepository $playerRepository,
+        TeamRepository $teamRepository,
+        Request $request
+    ): Response
+    {
+        $input = [
+            'name' => $request->get('name'),
+            'country' => $request->get('country'),
+            'money_balance' => (float)$request->get('money_balance')
+        ];
+
+        $team->setName($input['name']);
+        $team->setCountry($input['country']);
+        $team->setMoneyBalance($input['money_balance']);
+        $team->setUpdatedAt(new \DateTimeImmutable());
+
+        $validated = $this->validator->validate($team );
+
+        if ($validated->count()) {
+            $this->addFlash('error', $validated[0]->getMessage());
+
+            return $this->redirectToRoute('teams.create');
+        }
+
+        try {
+            if ($request->get('player_ids') !== null) {
+                foreach ($request->get('player_ids') as $playerId) {
+                    $team->addPlayer($playerRepository->find($playerId));
+                }
+            }
+
+            $teamRepository->save($team, true);
+        } catch (\Throwable $exception) {
+
+            $this->logger->error($exception);
+
+            $this->addFlash('error', "An Error Occurred While Updating Team");
+
+            return $this->redirectToRoute('teams.edit');
+        }
+
+        $this->addFlash('success', "Team Updated Successfully!");
+
+        return $this->redirectToRoute('teams.index');
+    }
+
+    #[Route('/show/{id}', name: 'show', methods: ["GET"])]
+    public function show(Team $team): Response
+    {
+        return $this->render('team/show.html.twig', [
             'team' => $team,
         ]);
     }

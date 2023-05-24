@@ -42,8 +42,9 @@
                             <td>
                                 <div>
                                     <button type="button" class="btn btn-outline-info">Players</button>
-                                    <button type="button" class="btn btn-outline-primary">Edit</button>
-                                    <button type="button" class="btn btn-outline-danger">Delete</button>
+                                    <a href="{{ path('teams.show', {id: team.id}) }}" class="btn btn-outline-primary">Show</a>
+                                    <a href="{{ path('teams.edit', {id: team.id}) }}" class="btn btn-outline-primary">Edit</a>
+                                    <a type="button" class="btn btn-outline-danger">Delete</a>
                                 </div>
                             </td>
                         </tr>

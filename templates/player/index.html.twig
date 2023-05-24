@@ -2,19 +2,76 @@
 
 {% block title %}Players{% endblock %}
 
+{% block breadcrumbs %}
+    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Players</li>
+        </ol>
+    </nav>
+{% endblock %}
+
 {% block body %}
-    <style>
-        .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-        .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-    </style>
-
-    <div class="example-wrapper">
-        <h1>Hello {{ controller_name }}! ✅</h1>
-
-        This friendly message is coming from:
-        <ul>
-            <li>Your controller at <code><a href="{{ '/Users/celestine/Desktop/main/workspace/Tests/internet-projects-football/src/Controller/HomeController.php'|file_link(0) }}">src/Controller/HomeController.php</a></code></li>
-            <li>Your template at <code><a href="{{ '/Users/celestine/Desktop/main/workspace/Tests/internet-projects-football/templates/home/index.html.twig'|file_link(0) }}">templates/home/index.html.twig</a></code></li>
-        </ul>
+    <div class="row px-3">
+        <div class="col-12">
+            <div class=" align-content-right" >
+                <div class="card-body">
+                    <a href="{{ path('players.create') }}" class="btn btn-primary float-right">Create Player</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 my-5">
+            <div class="">
+                <table class="table table-hover">
+                    <thead class="table-primary">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Surname</th>
+                        <th scope="col">Market Value</th>
+                        <th scope="col">Team Name</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for player in players %}
+                        <tr>
+                            <th scope="row">{{ player.id }}</th>
+                            <td>{{ player.name }}</td>
+                            <td>{{ player.surname }}</td>
+                            <td>{{ player.marketValue }}</td>
+                            <td>{{ player.team.name }}</td>
+                            <td>
+                                <div>
+                                    <a href="{{ path('players.show', {id: player.id}) }}" class="btn btn-outline-primary">Show</a>
+                                    <a href="{{ path('players.edit', {id: player.id}) }}" class="btn btn-outline-primary">Edit</a>
+                                    <a type="button" class="btn btn-outline-danger">Delete</a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="5">no records found</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-12">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-end">
+                    <li class="page-item disabled">
+                        <a class="page-link">Previous</a>
+                    </li>
+                    <li class="page-item"><a class="page-link active" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
     </div>
 {% endblock %}
