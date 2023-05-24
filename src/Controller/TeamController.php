@@ -167,4 +167,27 @@ class TeamController extends AbstractController
             'team' => $team,
         ]);
     }
+
+    #[Route('/delete/{id}', name: 'delete', methods: ['DELETE'])]
+    public function delete(
+        Request $request,
+        Team $team,
+        TeamRepository $teamRepository
+    ): Response
+    {
+        if ($this->isCsrfTokenValid('delete', $request->headers->get('x-csrf-token'))) {
+
+            foreach ($team->getPlayers() as $player) {
+                $team->removePlayer($player);
+            }
+
+            $teamRepository->remove($team, true);
+
+            $this->addFlash('success', "Team Deleted");
+        } else {
+            $this->addFlash('error', "Team Could Not Deleted");
+        }
+
+        return $this->json(['status' => true]);
+    }
 }

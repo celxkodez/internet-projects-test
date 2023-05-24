@@ -43,9 +43,9 @@
                             <td>{{ player.team.name }}</td>
                             <td>
                                 <div>
-                                    <a href="{{ path('players.show', {id: player.id}) }}" class="btn btn-outline-primary">Show</a>
+{#                                    <a href="{{ path('players.show', {id: player.id}) }}" class="btn btn-outline-primary">Show</a>#}
                                     <a href="{{ path('players.edit', {id: player.id}) }}" class="btn btn-outline-primary">Edit</a>
-                                    <a type="button" class="btn btn-outline-danger">Delete</a>
+                                    <a type="button" data-item-name="{{ player.name }}" data-item-id="{{ player.id }}"  class="btn btn-outline-danger delete-btn">Delete</a>
                                 </div>
                             </td>
                         </tr>
@@ -74,4 +74,58 @@
             </nav>
         </div>
     </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+
+        $(".delete-btn").click(async function (item) {
+            const element = $(item.target);
+
+            let url = '{{ url('players.delete', {id: ':id'}) }}';
+            url = url.replace(':id', element.data('item-id'))
+            const token = '{{ csrf_token('delete') }}'
+
+            const userFeedBack = await Swal.fire({
+                title: `Are sure to delete player ${element.data('item-name')}`,
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!'
+            })
+
+            if (! userFeedBack.isConfirmed) {
+                await Swal.fire({
+                    title: 'Action Aborted',
+                    html: 'closing in <b></b> milliseconds.',
+                    timer: 2000,
+                    timerProgressBar: true,
+                    didOpen: () => {
+                        Swal.showLoading()
+                        const b = Swal.getHtmlContainer().querySelector('b')
+                        timerInterval = setInterval(() => {
+                            b.textContent = Swal.getTimerLeft()
+                        }, 100)
+                    },
+                    willClose: () => {
+                        clearInterval(timerInterval)
+                    }
+                });
+
+                return;
+            }
+
+            const request = await fetch(url + '?_token=' + token , {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': token,
+                }
+            })
+
+            document.location.reload();
+        })
+    </script>
+
 {% endblock %}

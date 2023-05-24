@@ -156,5 +156,22 @@ class PlayerController extends AbstractController
         ]);
     }
 
+    #[Route('/delete/{id}', name: 'delete', methods: ['DELETE'])]
+    public function delete(
+        Request $request,
+        Player $player,
+        PlayerRepository $playerRepository
+    ): Response
+    {
+        if ($this->isCsrfTokenValid('delete', $request->headers->get('x-csrf-token'))) {
+            $playerRepository->remove($player, true);
+
+            $this->addFlash('success', "Player Deleted");
+        } else {
+            $this->addFlash('error', "Player Could Not Deleted");
+        }
+
+        return $this->json(['status' => true]);
+    }
 
 }
