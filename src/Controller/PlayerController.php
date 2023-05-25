@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\Player;
-use App\Entity\Team;
 use App\Repository\PlayerRepository;
 use App\Repository\TeamRepository;
 use Knp\Component\Pager\PaginatorInterface;
@@ -181,5 +180,4 @@ class PlayerController extends AbstractController
 
         return $this->json(['status' => true]);
     }
-
 }
