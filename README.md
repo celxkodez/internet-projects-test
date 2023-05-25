@@ -26,7 +26,9 @@ git clone https://github.com/celxkodez/internet-projects-test.git
 ```bash
     make start
 ```
-the above builds docker and starts your services
+the above builds docker and starts your services.
+
+then, run
 ```bash
     make vendor
 ```
