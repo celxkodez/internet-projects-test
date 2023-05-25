@@ -1,0 +1,152 @@
+{% extends 'layouts/app.html.twig' %}
+
+{% block title %}Transfer{% endblock %}
+
+{% block breadcrumbs %}
+    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url('app_home') }}">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Transfer</li>
+        </ol>
+    </nav>
+{% endblock %}
+
+{% block body %}
+    <div class="row p-3">
+        {% for player in players %}
+            <div class="col-md-4 col-12">
+                <div class="card m-3">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ player.surname }}</h5>
+                        <p class="card-text">{{ player.name }}</p>
+                        <p class="card-text">{{ player.team.name }}</p>
+                        <p class="card-text">{{ player.marketValue }}</p>
+                        <a href="#" data-player-name="{{ player.name }}" data-action="buy" data-player-id="{{ player.id }}" class="btn btn-outline-primary buy-btn">Buy</a>
+                        <a href="#" data-player-name="{{ player.name }}" data-action="sell" data-player-id="{{ player.id }}" class="btn btn-outline-info sell-btn">Sell</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <input hidden="" id="teams-input" data-teams="{{ teams|serialize('json', context) }}" type="text">
+{% endblock %}
+
+{% block scripts %}
+    <script>
+
+        $(".buy-btn").click(async function (item) {
+            await transfer(item);
+        })
+
+        $(".sell-btn").click(async function (item) {
+            await transfer(item);
+        })
+
+        async function transfer(item) {
+            const element = $(item.target);
+
+            const teams = {};
+
+            $('#teams-input').data('teams').forEach(team => teams[team.id] = team.name)
+
+            const selectedTeam = await Swal.fire({
+                title: 'Select Team',
+                input: 'select',
+                inputAttributes: {
+                    autocapitalize: 'off',
+                    options: ['test', 'again']
+                },
+                inputOptions:teams,
+                showCancelButton: true,
+                confirmButtonText: 'Continue',
+                showLoaderOnConfirm: true,
+            })
+
+            if (! selectedTeam.isConfirmed) {
+                await abortFeedBack();
+                return;
+            }
+
+            let url = '{{ url('app_transfer.transfer', {player: ':player-id', team: ':team-id'}) }}';
+
+            url = url.replace(':player-id', element.data('player-id'))
+                .replace(':team-id', selectedTeam.value);
+            const action = element.data('action');
+            const token = '{{ csrf_token('transfer') }}'
+
+
+            const userFeedBack = await Swal.fire({
+                title: `Are sure to ${action} player ${element.data('player-name')}`,
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes!'
+            })
+
+            if (! userFeedBack.isConfirmed) {
+                await abortFeedBack();
+                return;
+            }
+
+            const request = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': token,
+                },
+                body: {
+                    action,
+                }
+            })
+
+            const data = await request.json()
+
+            if (data.status) {
+
+                await Swal.fire({
+                    title: data.message,
+                    icon: 'success',
+                    showClass: {
+                        popup: 'animate__animated animate__fadeInDown'
+                    },
+                    hideClass: {
+                        popup: 'animate__animated animate__fadeOutUp'
+                    }
+                })
+            } else {
+                await Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: data.message,
+                    footer: '<a href="{{ path('teams.index') }}">Home</a>'
+                })
+
+                return;
+            }
+
+            document.location.reload();
+        }
+
+        async function abortFeedBack(title = null) {
+            await Swal.fire({
+                title: title ?? 'Action Aborted',
+                html: 'closing in <b></b> milliseconds.',
+                timer: 2000,
+                timerProgressBar: true,
+                didOpen: () => {
+                    Swal.showLoading()
+                    const b = Swal.getHtmlContainer().querySelector('b')
+                    timerInterval = setInterval(() => {
+                        b.textContent = Swal.getTimerLeft()
+                    }, 100)
+                },
+                willClose: () => {
+                    clearInterval(timerInterval)
+                }
+            });
+        }
+    </script>
+
+{% endblock %}
