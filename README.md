@@ -53,8 +53,10 @@ and enter 'yes' on the prompt
 
 after that, visit you can view the application on your local machine
 with http://127.0.0.1:8000/ or http://localhost:8000/
-
 if everything this is successful, visiting that url show a valid web page
+
+Then Proceed to create teams and players and also test the buy/selling of players
+
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first
