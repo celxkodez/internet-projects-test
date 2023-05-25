@@ -24,11 +24,23 @@ git clone https://github.com/celxkodez/internet-projects-test.git
 
 
 ```bash
-    make setup-application
+    make start
 ```
+the above builds docker and starts your services
+```bash
+    make vendor
+```
+Log in to the container instance with
+```bash
+    make sh
+```
+then run the application migration with 
+```bash
+    php bin/console doctrine:migration:migrate
+```
+and enter 'yes' on the prompt
 
-The above commands will install all dependency and perform all necessary
-application setup processes.
+
 
 [//]: # (to seed the database, simply use)
 
@@ -42,9 +54,7 @@ application setup processes.
 after that, visit you can view the application on your local machine
 with http://127.0.0.1:8000/ or http://localhost:8000/
 
-if everything this is successful, visiting that url should return a json
-response object with ``{"message": "application is up"}``.
-
+if everything this is successful, visiting that url show a valid web page
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first
