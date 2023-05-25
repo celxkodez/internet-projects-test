@@ -3,27 +3,25 @@
 {% block title %} Home {% endblock %}
 
 {% block breadcrumbs %}
-    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
-        <ol class="breadcrumb">
-{#            <li class="breadcrumb-item"><a href="#">Home</a></li>#}
-{#            <li class="breadcrumb-item active" aria-current="page">Library</li>#}
-        </ol>
-    </nav>
+    <div class="text-cent">
+       <h3>Top Richest Teams</h3>
+    </div>
 {% endblock %}
 
+
 {% block body %}
-    <style>
-        .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-        .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-    </style>
-
-    <div class="example-wrapper">
-        <h1>Hello {{ controller_name }}! ✅</h1>
-
-        This friendly message is coming from:
-        <ul>
-            <li>Your controller at <code><a href="{{ '/Users/celestine/Desktop/main/workspace/Tests/internet-projects-football/src/Controller/HomeController.php'|file_link(0) }}">src/Controller/HomeController.php</a></code></li>
-            <li>Your template at <code><a href="{{ '/Users/celestine/Desktop/main/workspace/Tests/internet-projects-football/templates/home/index.html.twig'|file_link(0) }}">templates/home/index.html.twig</a></code></li>
-        </ul>
+    <div class="row p-3">
+        {% for team in teams %}
+            <div class="col-md-4 col-12">
+                <div class="card m-3">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ team.name }}</h5>
+                        <p class="card-text">{{ team.moneyBalance }}</p>
+                        <p class="card-text">{{ team.country }}</p>
+                        <p class="card-text">{{ team.players().count() }}</p>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
     </div>
 {% endblock %}
